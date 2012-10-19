@@ -38,6 +38,7 @@ app.get('/clients/list', ensureAuthenticated, clients.list);
 app.post('/client', ensureAuthenticated, clients.update);
 
 app.get('/versions/latest', ensureAuthenticated, versions.latest);
+app.post('/version', ensureAuthenticated, versions.update);
 
 // data
 console.log('opening database');

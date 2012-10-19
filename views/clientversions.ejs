@@ -55,7 +55,7 @@
       var loadLatestVersion = function() {
         $.getJSON('/versions/latest', function(data) {
           latestVersion = data;
-          $('#latestversion').html("Latest Version is " + latestVersion.version +  " released " + moment(latestVersion.date).fromNow());
+          $('#latestversion').html("Version " + latestVersion.version +  " was released " + moment(latestVersion.date).fromNow());
           loadClients();
         });
       };

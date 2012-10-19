@@ -1,6 +1,6 @@
-var client = require('../lib/client.js'),
+var _ = require('underscore'),
     data = require('../lib/data.js'),
-    release = require('../lib/release.js');
+    versions = require('./versions.js');
 
 var clients = {};
 
@@ -9,17 +9,33 @@ clients.get = function(req, res) {
 };
 
 clients.list = function(req, res) {
-   data.getCollection('clients', function(e, collection) {
+  versions.all(function(e, vs) {
     if(e) {
       console.error(e);
       return res.send(500);
     }
-    collection.find().toArray(function(e, clients) {
+    data.getCollection('clients', function(e, collection) {
       if(e) {
         console.error(e);
         return res.send(500);
       }
-      res.json(clients);
+      collection.find().toArray(function(e, clients) {
+        if(e) {
+          console.error(e);
+          return res.send(500);
+        }
+
+        _.each(clients, function(client) {
+          var version = _.find(vs, function(v) { return v.version == client.version; });
+          if(!version) {
+            version = { date: new Date(2000, 1, 1).getTime() };
+          }
+
+          client.date = version.date;
+        });
+
+        res.json(clients);
+      });
     });
   });
 };
