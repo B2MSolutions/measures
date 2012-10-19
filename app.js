@@ -1,5 +1,6 @@
 var express = require('express'),
     clients = require('./routes/clients.js'),
+    data = require('./lib/data.js'),
     index = require('./routes/index.js'),
     login = require('./routes/login.js'),
     versions = require('./routes/versions.js'),
@@ -36,9 +37,19 @@ app.get('/clients/versions', ensureAuthenticated, clients.get);
 app.get('/clients/list', ensureAuthenticated, clients.list);
 app.get('/versions/latest', ensureAuthenticated, versions.latest);
 
-// server
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+// data
+console.log('opening database');
+data.open(function(e) {
+  if(e) {
+    console.error(e);
+    return;
+  }
+
+  console.log('database opened');
+  // server
+  http.createServer(app).listen(app.get('port'), function() {
+    console.log("server listening on port " + app.get('port'));
+  });
 });
 
 function ensureAuthenticated(req, res, next) {
