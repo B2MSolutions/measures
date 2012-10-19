@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include header %>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <h1><%= title %></h1>
+        <form id="changeversion" class="form">
+          <div class="control-group">
+            <label class="control-label" for="inputEmail">Version</label>
+            <div class="controls">
+              <select id="version">
+                <% versions.forEach(function(version){
+                  if(version.version === client.version) {
+                   %>
+                    <option selected="selected"><%= version.version %></option>
+                   <% } else {
+                   %>
+                    <option><%= version.version %></option>
+                   <% }
+                  %>
+                <option><%= version.version %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <button id="change" type="submit" class="btn">Change Version</button>
+        </form>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var clientVersion = <%= client.version %>;
+
+      $(document).ready(function() {
+        $('#changeversion').submit(function() {
+          var version = $('#version').val();
+          if(version != clientVersion) {
+            $.post('/client', { name : '<%= client.name %>', version: version }, function() {
+            });
+          }
+          return false;
+        });
+      });
+    </script>
+
+  </body>
+</html>

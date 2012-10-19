@@ -8,6 +8,25 @@ clients.get = function(req, res) {
   res.render('clientversions', { title: 'Client Versions' });
 };
 
+clients.getOne = function(req, res) {
+  data.getCollection('clients', function(e, collection) {
+    if(e) {
+      console.error(e);
+      return res.send(500);
+    }
+
+    collection.findOne({_id: req.params.name}, function(e, client) {
+      if(e) {
+        console.error(e);
+        return res.send(500);
+      }
+      versions.all(function(e, vs) {
+        return res.render('client', { title: req.params.name, client: client, versions: vs });
+      });
+    });
+  });
+};
+
 clients.list = function(req, res) {
   versions.all(function(e, vs) {
     if(e) {

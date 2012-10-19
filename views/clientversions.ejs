@@ -47,7 +47,7 @@
               c = 'error';
             }
 
-            $('#clients').append('<tr class="' + c + '"><td>' + client.name + '</td><td>' + client.version + '</td><td>' + moment(client.date).from(latestVersion.date) + '</td></tr>');
+            $('#clients').append('<tr class="' + c + '"><td><a href="/client/' + client.name + '">' + client.name + '</a></td><td class="version">' + client.version + '</td><td>' + moment(client.date).from(latestVersion.date) + '</td></tr>');
           });
         });
       }

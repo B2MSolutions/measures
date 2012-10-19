@@ -35,6 +35,7 @@ app.post('/login', login.post);
 app.get('/', ensureAuthenticated, index.get);
 app.get('/clients/versions', ensureAuthenticated, clients.get);
 app.get('/clients/list', ensureAuthenticated, clients.list);
+app.get('/client/:name', ensureAuthenticated, clients.getOne);
 app.post('/client', ensureAuthenticated, clients.update);
 
 app.get('/versions/latest', ensureAuthenticated, versions.latest);
