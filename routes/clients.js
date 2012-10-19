@@ -1,4 +1,5 @@
 var client = require('../lib/client.js'),
+    data = require('../lib/data.js'),
     release = require('../lib/release.js');
 
 var clients = {};
@@ -8,13 +9,47 @@ clients.get = function(req, res) {
 };
 
 clients.list = function(req, res) {
-  var data = [
-    { name: 'Client 1', version: '12', date: Date.now() - 120000 },
-    { name: 'Client 2', version: '2', date: Date.now() - 2111120000 },
-    { name: 'Client 3', version: '1', date: Date.now() - 222222120000 }
-  ];
+   data.getCollection('clients', function(e, collection) {
+    if(e) {
+      console.error(e);
+      return res.send(500);
+    }
+    collection.find().toArray(function(e, clients) {
+      if(e) {
+        console.error(e);
+        return res.send(500);
+      }
+      res.json(clients);
+    });
+  });
+};
 
-  res.json(data);
+clients.update = function(req, res) {
+  if(!req.body.name || !req.body.version) {
+    console.error('missing fields');
+    return res.send(500);
+  }
+
+  var client = {
+    _id: req.body.name,
+    name: req.body.name,
+    version: req.body.version,
+    date: Date.now() - 2000000
+  };
+
+  data.getCollection('clients', function(e, collection) {
+    if(e) {
+      console.error(e);
+      return res.send(500);
+    }
+    collection.update({ _id: client.name }, client, { upsert: true }, function(e) {
+      if(e) {
+        console.error(e);
+        return res.send(500);
+      }
+      res.send(200);
+    });
+  });
 };
 
 module.exports = clients;
