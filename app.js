@@ -32,7 +32,8 @@ app.post('/login', login.post);
 
 // authenticated
 app.get('/', ensureAuthenticated, index.get);
-app.get('/clients/versions', ensureAuthenticated, clients.versions.get);
+app.get('/clients/versions', ensureAuthenticated, clients.get);
+app.get('/clients/list', ensureAuthenticated, clients.list);
 app.get('/versions/latest', ensureAuthenticated, versions.latest);
 
 // server

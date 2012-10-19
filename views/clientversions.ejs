@@ -16,38 +16,70 @@
               <th>Age</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Build Server</td>
+          <tbody id="clients">
+<!--             <tr class="success">
+              <td>Client 0</td>
               <td>2</td>
               <td>Current</td>
             </tr>
-            <tr>
+            <tr class="warning">
               <td>Client 1</td>
               <td>2</td>
               <td>10 days</td>
             </tr>
-            <tr>
+            <tr class="error">
               <td>Client 2</td>
               <td>2</td>
               <td>Two Years</td>
             </tr>
-          </tbody>
+ -->          </tbody>
         </table>
       </div>
     </div>
 
     <script>
-      var latestVersionDate = Date.now();
+      var latestVersion = {
+        version: 0,
+        date: Date.now()
+      };
+
+      var dateSort = function(a, b) {
+        return parseInt(a.date) < parseInt(b.date);
+      };
+
+      var loadClients = function() {
+        $.getJSON('/clients/list', function(data) {
+          $('#clients').empty();
+          $.each(data.sort(dateSort), function(i, client) {
+            var current = moment(client.date);
+            var latest = moment(latestVersion.date);
+
+            var monthDiff = latest.diff(current, 'months');
+            var c = 'success';
+            if(monthDiff > 2) {
+              c = 'warning';
+            }
+            if(monthDiff > 6) {
+              c = 'error';
+            }
+
+            $('#clients').append('<tr class="' + c + '"><td>' + client.name + '</td><td>' + client.version + '</td><td>' + moment(client.date).from(latestVersion.date) + '</td></tr>');
+          });
+        });
+      }
+
       var loadLatestVersion = function() {
         $.getJSON('/versions/latest', function(data) {
-          $('#latestversion').html("Latest Version is " + data.version +  " released " + moment(data.date).fromNow());
+          latestVersion = data;
+          $('#latestversion').html("Latest Version is " + latestVersion.version +  " released " + moment(latestVersion.date).fromNow());
+          loadClients();
         });
       };
 
       $(document).ready(function()
       {
         loadLatestVersion();
+        setInterval(loadLatestVersion, 30000);
       });
     </script>
 
