@@ -2,6 +2,7 @@ var express = require('express'),
     clients = require('./routes/clients.js'),
     index = require('./routes/index.js'),
     login = require('./routes/login.js'),
+    versions = require('./routes/versions.js'),
     http = require('http'),
     path = require('path');
 
@@ -32,6 +33,7 @@ app.post('/login', login.post);
 // authenticated
 app.get('/', ensureAuthenticated, index.get);
 app.get('/clients/versions', ensureAuthenticated, clients.versions.get);
+app.get('/versions/latest', ensureAuthenticated, versions.latest);
 
 // server
 http.createServer(app).listen(app.get('port'), function(){

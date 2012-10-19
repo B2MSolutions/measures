@@ -4,10 +4,52 @@
     <% include header %>
   </head>
   <body>
-    <div class="container">
-      <div class="row">
+    <div class="container-fluid">
+      <div class="row-fluid">
         <h1><%= title %></h1>
+        <h2 id="latestversion"></h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Version</th>
+              <th>Age</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Build Server</td>
+              <td>2</td>
+              <td>Current</td>
+            </tr>
+            <tr>
+              <td>Client 1</td>
+              <td>2</td>
+              <td>10 days</td>
+            </tr>
+            <tr>
+              <td>Client 2</td>
+              <td>2</td>
+              <td>Two Years</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <script>
+      var latestVersionDate = Date.now();
+      var loadLatestVersion = function() {
+        $.getJSON('/versions/latest', function(data) {
+          $('#latestversion').html("Latest Version is " + data.version +  " released " + moment(data.date).fromNow());
+        });
+      };
+
+      $(document).ready(function()
+      {
+        loadLatestVersion();
+      });
+    </script>
+
   </body>
 </html>
