@@ -8,7 +8,7 @@ login.post = function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
-  if(username === password) {
+  if(username === process.env['MEASURES_USER'] && password === process.env['MEASURES_PASSWORD']) {
     req.session.regenerate(function() {
       req.session.user = { name: username };
       res.redirect('/');

@@ -1,4 +1,5 @@
 var express = require('express'),
+    clients = require('./routes/clients.js'),
     index = require('./routes/index.js'),
     login = require('./routes/login.js'),
     http = require('http'),
@@ -30,6 +31,7 @@ app.post('/login', login.post);
 
 // authenticated
 app.get('/', ensureAuthenticated, index.get);
+app.get('/clients/versions', ensureAuthenticated, clients.versions.get);
 
 // server
 http.createServer(app).listen(app.get('port'), function(){
@@ -37,10 +39,9 @@ http.createServer(app).listen(app.get('port'), function(){
 });
 
 function ensureAuthenticated(req, res, next) {
-    console.error('here');
     if (req.session.user) {
         return next();
     }
-    console.error('here');
+
     res.redirect('/login');
 }
