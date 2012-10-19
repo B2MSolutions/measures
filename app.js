@@ -1,13 +1,8 @@
-
-/**
- * Module dependencies.
- */
-
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , http = require('http')
-  , path = require('path');
+var express = require('express'),
+    index = require('./routes/index.js'),
+    login = require('./routes/login.js'),
+    http = require('http'),
+    path = require('path');
 
 var app = express();
 
@@ -29,9 +24,23 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+// unauthenticated
+app.get('/login', login.get);
+app.post('/login', login.post);
 
+// authenticated
+app.get('/', ensureAuthenticated, index.get);
+
+// server
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
+function ensureAuthenticated(req, res, next) {
+    console.error('here');
+    if (req.session.user) {
+        return next();
+    }
+    console.error('here');
+    res.redirect('/login');
+}

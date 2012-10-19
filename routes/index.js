@@ -1,8 +1,7 @@
+index = {};
 
-/*
- * GET home page.
- */
-
-exports.index = function(req, res){
-  res.render('index', { title: 'Measures' });
+index.get = function(req, res) {
+  res.render('index', { title: 'Hornet Measures' });
 };
+
+module.exports = index;
