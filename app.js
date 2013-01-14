@@ -61,5 +61,6 @@ function ensureAuthenticated(req, res, next) {
         return next();
     }
 
+    req.session.redirect_to = req.path;
     res.redirect('/login');
 }
