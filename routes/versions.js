@@ -18,7 +18,7 @@ versions.all = function(done) {
     if(e) {
       return done(e);
     }
-    collection.find().toArray(done);
+    collection.find().sort( { version: -1 } ).toArray(done);
   });
 };
 
