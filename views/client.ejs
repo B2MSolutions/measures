@@ -10,10 +10,11 @@
         <form id="changeversion" class="form">
           <div class="control-group">
             <label class="control-label" for="inputEmail">Version</label>
-            <div class="controls">
+            <div class="controls">              
+
               <select id="version">
                 <% versions.forEach(function(version){
-                  if(version.version === client.version) {
+                  if(parseInt(version.version) === parseInt(client.version)) {
                    %>
                     <option selected="selected"><%= version.version %></option>
                    <% } else {
