@@ -1,4 +1,5 @@
-var express = require('express'),
+var authentication = require('./lib/authentication.js'),
+    express = require('express'),
     clients = require('./routes/clients.js'),
     data = require('./lib/data.js'),
     index = require('./routes/index.js'),
@@ -61,6 +62,24 @@ function ensureAuthenticated(req, res, next) {
         return next();
     }
 
-    req.session.redirect_to = req.path;
-    res.redirect('/login');
+    var username = req.headers.username;
+    var password = req.headers.password;
+    
+    if(username && password) {
+      authentication.validate(username, password, function(e, valid) {
+        if(valid) {
+          console.log('authenticated using headers');
+          req.session.user = { name: username };
+          return next();
+        } else {
+          console.log('not authenticated (invalid headers)');
+          req.session.redirect_to = req.path;
+          return res.redirect('/login');          
+        }
+      });
+    } else {
+      console.log('not authenticated');
+      req.session.redirect_to = req.path;
+      return res.redirect('/login');
+    }
 }
