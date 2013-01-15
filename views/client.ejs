@@ -38,6 +38,7 @@
           var version = $('#version').val();
           if(version != clientVersion) {
             $.post('/client', { name : '<%= client.name %>', version: version }, function() {
+              window.location.replace("../../clients/versions/");
             });
           }
           return false;

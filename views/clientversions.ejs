@@ -18,6 +18,10 @@
           </thead>
           <tbody id="clients"></tbody>
         </table>
+       <form class="form-inline">
+        <input id="addclientname" type="text" class="input-large" placeholder="New Client" >
+        <button id="addclient" type="submit" class="btn">Add</button>
+      </form>
       </div>
     </div>
 
@@ -64,6 +68,16 @@
       {
         loadLatestVersion();
         setInterval(loadLatestVersion, 30000);
+        $("#addclient").click(function() {  
+          var name = $("#addclientname").val();
+          if(latestVersion.version != 0 && name != "") {
+            $.post('/client', { name : name, version:latestVersion.version  }, function() {
+              loadClients();
+              $("#addclientname").val('');
+            });
+          }
+          return false;
+        });  
       });
     </script>
 
