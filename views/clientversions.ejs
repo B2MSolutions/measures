@@ -32,13 +32,14 @@
       };
 
       var dateSort = function(a, b) {
-        return parseInt(a.date) < parseInt(b.date);
+        return parseInt(b.date) - parseInt(a.date);
       };
 
       var loadClients = function() {
         $.getJSON('/clients/list', function(data) {
           $('#clients').empty();
-          $.each(data.sort(dateSort), function(i, client) {
+          var sorted = data.sort(dateSort);
+          $.each(sorted, function(i, client) {
             var current = moment(client.date);
             var latest = moment(Date.now());
 

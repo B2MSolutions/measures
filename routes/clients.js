@@ -1,4 +1,5 @@
 var _ = require('underscore'),
+    crypto = require('crypto'),
     data = require('../lib/data.js'),
     versions = require('./versions.js');
 
@@ -44,13 +45,12 @@ clients.list = function(req, res) {
           return res.send(500);
         }
 
-        _.each(clients, function(client) {
-          var version = _.find(vs, function(v) { return v.version == client.version; });
-          if(!version) {
-            version = { date: new Date(2000, 1, 1).getTime() };
-          }
+        _.each(clients, function(client) {   
+          var version = _.find(vs, function(v) { 
+            return v.version == client.version; 
+          });     
 
-          client.date = version.date;
+          client.date = version.date;   
         });
 
         res.json(clients);
@@ -66,18 +66,33 @@ clients.update = function(req, res) {
   }
 
   var client = {
-    _id: req.body.name,
     name: req.body.name,
     version: req.body.version,
-    date: Date.now() - 2000000
+    hostname: req.body.hostname,
+    username: req.body.username
   };
+
+  if(req.body.password) {
+    var key = process.env.MEASURES_PASSWORD_KEY,
+    var cipher = crypto.createCipher('aes-256-cbc', key);
+    var text = req.body.password;
+    var encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    // var decipher = crypto.createDecipher('aes-256-cbc', key);
+    // var dec = decipher.update(encrypted, 'hex', 'utf8');
+    // dec += decipher.final('utf8');
+    // console.log(dec);
+
+    client.password = encrypted;
+  }
 
   data.getCollection('clients', function(e, collection) {
     if(e) {
       console.error(e);
       return res.send(500);
     }
-    collection.update({ _id: client.name }, client, { upsert: true }, function(e) {
+    collection.update({ _id: client.name }, { "$set" : client }, { upsert: true }, function(e) {
       if(e) {
         console.error(e);
         return res.send(500);

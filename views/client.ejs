@@ -9,9 +9,8 @@
         <h1><%= title %></h1>
         <form id="changeversion" class="form">
           <div class="control-group">
-            <label class="control-label" for="inputEmail">Version</label>
+            <label class="control-label">Version</label>
             <div class="controls">              
-
               <select id="version">
                 <% versions.forEach(function(version){
                   if(parseInt(version.version) === parseInt(client.version)) {
@@ -25,7 +24,17 @@
               </select>
             </div>
           </div>
-          <button id="change" type="submit" class="btn">Change Version</button>
+          <div class="control-group">
+            <div class="controls"><input id="hostname" type="text" class="input-large" placeholder="Hostname" value="<% if(client.hostname) {%><%= client.hostname %><% } %>" ></div>
+          </div>
+          <div class="control-group">
+            <div class="controls"><input id="username" type="text" class="input-large" placeholder="Username" value="<% if(client.username) {%><%= client.username %><% } %>" ></div>
+          </div>
+          <div class="control-group">
+            <div class="controls"><input id="password" type="password" class="input-large" placeholder="Password" ></div>
+          </div>
+
+          <button id="change" type="submit" class="btn">Save</button>
         </form>
       </div>
     </div>
@@ -36,11 +45,14 @@
       $(document).ready(function() {
         $('#changeversion').submit(function() {
           var version = $('#version').val();
-          if(version != clientVersion) {
-            $.post('/client', { name : '<%= client.name %>', version: version }, function() {
-              window.location.replace("../../clients/versions/");
-            });
-          }
+          var hostname = $('#hostname').val();
+          var username = $('#username').val();
+          var password = $('#password').val();
+
+          $.post('/client', { name : '<%= client.name %>', version: version, hostname: hostname, username: username, password: password }, function() {
+            window.location.replace("../../clients/versions/");
+          });
+
           return false;
         });
       });
