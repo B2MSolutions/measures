@@ -28,6 +28,13 @@ clients.getOne = function(req, res) {
   });
 };
 
+clients.getStatistics = function(req, res) {
+  var client = req.params.name;
+  return res.send({
+    breached: true
+  });
+}
+
 clients.list = function(req, res) {
   versions.all(function(e, vs) {
     if(e) {
@@ -73,7 +80,7 @@ clients.update = function(req, res) {
   };
 
   if(req.body.password) {
-    var key = process.env.MEASURES_PASSWORD_KEY,
+    var key = process.env.MEASURES_PASSWORD_KEY;
     var cipher = crypto.createCipher('aes-256-cbc', key);
     var text = req.body.password;
     var encrypted = cipher.update(text, 'utf8', 'hex');

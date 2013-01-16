@@ -14,6 +14,7 @@
               <th>Client</th>
               <th>Version</th>
               <th>Released</th>
+              <th>Licence Breached</th>
             </tr>
           </thead>
           <tbody id="clients"></tbody>
@@ -51,8 +52,13 @@
             if(monthDiff > 6) {
               c = 'error';
             }
+            var licencebreachid = 'licencebreach' + i;
 
-            $('#clients').append('<tr class="' + c + '"><td><a href="/client/' + client.name + '">' + client.name + '</a></td><td class="version">' + client.version + '</td><td>' + moment(client.date).from(latest) + '</td></tr>');
+            $('#clients').append('<tr class="' + c + '"><td><a href="/client/' + client.name + '">' + client.name + '</a></td><td class="version">' + client.version + '</td><td>' + moment(client.date).from(latest) + '</td><td><input type="checkbox" id="' + licencebreachid + '" disabled="disabled" />' + '</td></tr>');
+ 
+            $.getJSON('/client/statistics/' + client.name, function(data) {
+               $("#" + licencebreachid).prop('checked', data.breached);
+            });
           });
         });
       }
