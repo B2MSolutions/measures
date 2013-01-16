@@ -1,7 +1,8 @@
 var _ = require('underscore'),
     crypto = require('crypto'),
     data = require('../lib/data.js'),
-    versions = require('./versions.js');
+    versions = require('./versions.js'),
+    ria = require('../lib/ria.js');;
 
 var clients = {};
 
@@ -29,9 +30,41 @@ clients.getOne = function(req, res) {
 };
 
 clients.getStatistics = function(req, res) {
-  var client = req.params.name;
-  return res.send({
-    breached: true
+
+  data.getCollection('clients', function(e, collection) {
+    if(e) {
+      console.error(e);
+      return res.send(500);
+    }
+
+    collection.findOne({_id: req.params.name}, function(e, client) {
+      if(e) {
+        console.error(e);
+        return res.send(500);
+      }
+
+      if(client.hostname) {        
+        ria.get(client, "/Common-RIA-Web-Services-CoreDomainService.svc/JSON/GetActiveLicence", function(e, response, body) {
+          if(e) {
+            console.error(e);
+            return res.send(500);
+          }
+
+          console.log(body);
+          var licence = JSON.parse(body);
+
+          var data = { 
+            breached: licence.GetActiveLicenceResult.RootResults[0].Breached
+          };
+
+          console.log(data);
+
+          return res.send(data);
+        });
+      } else {
+        return res.send(null);
+      }     
+    });
   });
 }
 
@@ -86,10 +119,7 @@ clients.update = function(req, res) {
     var encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     
-    // var decipher = crypto.createDecipher('aes-256-cbc', key);
-    // var dec = decipher.update(encrypted, 'hex', 'utf8');
-    // dec += decipher.final('utf8');
-    // console.log(dec);
+    
 
     client.password = encrypted;
   }
