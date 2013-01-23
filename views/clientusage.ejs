@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include header %>
+  </head>
+
+<body>
+
+  <figure id="myChart" style="height:500px;"></figure>
+
+  <script>
+
+	  $.getJSON('/client/usage/data/someserver', function(responseData) {
+		var data = {
+		  "xScale": "time",
+		  "yScale": "linear",
+		  "type": "line",
+		  "main": [
+		    {
+		      "data": responseData
+		    }
+		  ]
+		};
+
+		var opts = {
+		  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
+		  "tickFormatX": function (x) { return d3.time.format('%A')(x); }
+		};
+
+		var myChart = new xChart('line', data, '#myChart', opts);
+	});
+  </script>
+
+</body>
+</html>
