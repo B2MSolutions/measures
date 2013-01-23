@@ -50,7 +50,6 @@ clients.getStatistics = function(req, res) {
             return res.send(500);
           }
 
-          console.log(body);
           var licence = JSON.parse(body);
 
           var data = { 
