@@ -25,7 +25,15 @@
             </div>
           </div>
           <div class="control-group">
-            <div class="controls"><input id="hostname" type="text" class="input-large" placeholder="Hostname" value="<% if(client.hostname) {%><%= client.hostname %><% } %>" ></div>
+              <label class="checkbox">
+                <input id="https" type="checkbox" checked="<% if(client.https) {%><%= client.https %><% } else {%>true<%} %>"/> use https
+              </label>
+            <div class="controls"><input id="hostname" type="text" class="input-large" placeholder="Hostname" value="<% if(client.hostname) {%><%= client.hostname %><% } %>" >
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+            </div>
           </div>
           <div class="control-group">
             <div class="controls"><input id="username" type="text" class="input-large" placeholder="Username" value="<% if(client.username) {%><%= client.username %><% } %>" ></div>
@@ -48,8 +56,9 @@
           var hostname = $('#hostname').val();
           var username = $('#username').val();
           var password = $('#password').val();
+          var https = $('#https').is(':checked');
 
-          $.post('/client', { name : '<%= client.name %>', version: version, hostname: hostname, username: username, password: password }, function() {
+          $.post('/client', { name : '<%= client.name %>', version: version, hostname: hostname, username: username, password: password, https: https }, function() {
             window.location.replace("../../clients/versions/");
           });
 

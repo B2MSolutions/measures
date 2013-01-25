@@ -6,7 +6,7 @@
 
 <body>
 	<div class="container-fluid">
-		<h1>Client usage for <%= client %></h1>
+		<h1>Client Usage Metrics (<%= client %>)</h1>
 		<figure id="myChart" style="height:500px;"></figure>		
   	</div>
 
@@ -26,7 +26,8 @@
 
 		var opts = {
 			dataFormatX: function (x) { return new Date(x); },
-			tickFormatX: function (x) { return d3.time.format('%d/%m %X')(x); }
+			tickFormatX: function (x) { return d3.time.format('%d/%m %X')(x); },
+			tickHintY : 0
 		};
 
 		var myChart = new xChart('bar', data, '#myChart', opts);

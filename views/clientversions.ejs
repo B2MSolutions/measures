@@ -15,6 +15,7 @@
               <th>Version</th>
               <th>Released</th>
               <th>Licence</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="clients"></tbody>
@@ -54,7 +55,12 @@
             }
             var licencebreachid = 'licencebreach' + i;
 
-            $('#clients').append('<tr class="' + c + '"><td><a href="/client/' + client.name + '">' + client.name + '</a></td><td class="version">' + client.version + '</td><td>' + moment(client.date).from(latest) + '</td><td id="' + licencebreachid + '">Unknown</td></tr>');
+            var mainLink = client.name;
+            if(parseInt(client.version) >= 787 && client.hostname) {
+              mainLink = '<a href="/client/usage/' + client.name + '">' + client.name + '</a>';
+            }
+
+            $('#clients').append('<tr class="' + c + '"><td>' + mainLink + '</td><td class="version">' + client.version + '</td><td>' + moment(client.date).from(latest) + '</td><td id="' + licencebreachid + '">Unknown</td><td><a href="/client/' + client.name + '">configure</a></td></tr>');
  
             // $.getJSON('/client/statistics/' + client.name, function(data) {
             //   var breachedText = "Unknown";

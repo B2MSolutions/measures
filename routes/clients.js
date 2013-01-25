@@ -172,7 +172,8 @@ clients.update = function(req, res) {
     name: req.body.name,
     version: req.body.version,
     hostname: req.body.hostname,
-    username: req.body.username
+    username: req.body.username,
+    https: req.body.https
   };
 
   if(req.body.password) {
@@ -182,8 +183,6 @@ clients.update = function(req, res) {
     var encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     
-    
-
     client.password = encrypted;
   }
 
