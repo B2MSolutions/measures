@@ -11,34 +11,21 @@ clients.get = function(req, res) {
 };
 
 clients.getOne = function(req, res) {
-  data.getCollection('clients', function(e, collection) {
+  clients.getClient(req.params.name, function(e, client) {
     if(e) {
       console.error(e);
       return res.send(500);
     }
 
-    collection.findOne({_id: req.params.name}, function(e, client) {
-      if(e) {
-        console.error(e);
-        return res.send(500);
-      }
-      versions.all(function(e, vs) {
-        return res.render('client', { title: req.params.name, client: client, versions: vs });
-      });
+    versions.all(function(e, vs) {
+      return res.render('client', { title: req.params.name, client: client, versions: vs });
     });
   });
 };
 
 clients.getStatistics = function(req, res) {
-
-  data.getCollection('clients', function(e, collection) {
+  clients.getClient(req.params.name, function(e, client) {
     if(e) {
-      console.error(e);
-      return res.send(500);
-    }
-
-    collection.findOne({_id: req.params.name}, function(e, client) {
-      if(e) {
         console.error(e);
         return res.send(500);
       }
@@ -62,8 +49,7 @@ clients.getStatistics = function(req, res) {
         });
       } else {
         return res.send(null);
-      }     
-    });
+      } 
   });
 }
 
@@ -99,42 +85,81 @@ clients.list = function(req, res) {
 };
 
 clients.viewUsage = function(req, res) {
-  res.render('clientusage', { title: 'Client Usage' });
+  res.render('clientusage', { title: 'Client Usage', client: req.params.name });
 };
 
-clients.getUsage = function(req, res) {
-  var data = [
-    {
-      "x": "2012-11-05",
-      "y": 1
-    },
-    {
-      "x": "2012-11-06",
-      "y": 6
-    },
-    {
-      "x": "2012-11-07",
-      "y": 13
-    },
-    {
-      "x": "2012-11-08",
-      "y": -3
-    },
-    {
-      "x": "2012-11-09",
-      "y": -4
-    },
-    {
-      "x": "2012-11-10",
-      "y": 9
-    },
-    {
-      "x": "2012-11-11",
-      "y": 77
-    }
-  ];
+var getDate = function(dt) {  
+  //'2013-01-25T11:00:00.000Z'
+  return new Date(parseInt(dt.substr(6, 13)));//.toJSON().substr(0, 19);
+ }
 
-  res.send(data);
+
+clients.getUsage = function(req, res) {
+  clients.getClient(req.params.name, function(e, client) {
+    if(e) {
+      console.error(e);
+      return res.send(500);
+    }
+
+    if(!client) {
+      console.error('could not find ' + req.params.name);
+      return res.send(500);
+    }
+
+    if(client.hostname) {        
+      ria.get(client, "/Common-RIA-Web-Services-CoreDomainService.svc/JSON/GetHourlyClientUsage", function(e, response, body) {
+        if(e) {
+          console.error(e);
+          return res.send(500);
+        }
+
+        var results = JSON.parse(body);
+
+        var mappedFromWCF = _.map(results.GetHourlyClientUsageResult.RootResults, function(result){ return { x: getDate(result.Slice), y: result.Count } });
+        var sortedByDate = _.sortBy(mappedFromWCF, function(result) { return result.x; });
+        var addGapsBetweenHours = clients.interpolate(sortedByDate, new Date());
+        var mappedForXCharts = _.map(addGapsBetweenHours, function(result) { return { x: result.x.toJSON().substr(0, 19), y: result.y };});
+
+        console.log(mappedForXCharts);
+        res.send(mappedForXCharts);    
+      });
+    }
+  });
+};
+clients.interpolate = function(initial, endDate) {
+
+  var msInOneHour = (1000 * 60 * 60);
+
+  var last = _.last(initial);
+
+  if(last && clients.diffInHours(last.x, endDate) > 0) {
+    initial.push({ x: endDate, y: 0});
+  };
+
+
+  var result = [];
+
+  for (var i = 0; i < initial.length; ++i) {
+    result.push(initial[i]);
+
+    if(i < initial.length - 1) {
+      var thisDate = initial[i].x;
+      var nextDate = initial[i+1].x;
+
+      var diffinHours = clients.diffInHours(thisDate, nextDate);
+      while(diffinHours > 0) {
+        result.push({ x: new Date(nextDate - diffinHours * msInOneHour), y: 0});
+        diffinHours--;
+      }
+    }    
+  }
+
+  return result;
+};
+
+clients.diffInHours = function(start, end) {
+  var diffInMs = end - start;
+  return diffInMs / (1000 * 60 * 60) - 1;
 };
 
 clients.update = function(req, res) {
@@ -173,6 +198,24 @@ clients.update = function(req, res) {
         return res.send(500);
       }
       res.send(200);
+    });
+  });
+};
+
+clients.getClient = function(id, done) {
+  data.getCollection('clients', function(e, collection) {
+    if(e) {
+      console.error(e);
+      return done(e);
+    }
+
+    collection.findOne({_id: id}, function(e, client) {
+      if(e) {
+        console.error(e);
+        return done(e);
+      }
+
+      return done(null, client);
     });
   });
 };

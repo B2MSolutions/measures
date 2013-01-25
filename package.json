@@ -12,8 +12,15 @@
     "underscore" :"1.4.2",
     "request" : "2.12.0"
   },
+  "devDependencies" : {
+    "mocha" : "x.x.x",
+    "sinon" : "x.x.x"
+  },
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
+  },
+  "scripts": { 
+    "test": "mocha" 
   }
 }

@@ -5,31 +5,33 @@
   </head>
 
 <body>
+	<div class="container-fluid">
+		<h1>Client usage for <%= client %></h1>
+		<figure id="myChart" style="height:500px;"></figure>		
+  	</div>
 
-  <figure id="myChart" style="height:500px;"></figure>
+	<script>
 
-  <script>
-
-	  $.getJSON('/client/usage/data/someserver', function(responseData) {
+	$.getJSON('/client/usage/data/<%= client %>', function(responseData) {
 		var data = {
-		  "xScale": "time",
-		  "yScale": "linear",
-		  "type": "line",
-		  "main": [
-		    {
-		      "data": responseData
-		    }
-		  ]
+			"xScale": "ordinal",
+			"yScale": "linear",
+			"type": "bar",
+			"main": [
+			{
+			  "data": responseData
+			}
+			]
 		};
 
 		var opts = {
-		  "dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-		  "tickFormatX": function (x) { return d3.time.format('%A')(x); }
+			dataFormatX: function (x) { return new Date(x); },
+			tickFormatX: function (x) { return d3.time.format('%d/%m %X')(x); }
 		};
 
-		var myChart = new xChart('line', data, '#myChart', opts);
+		var myChart = new xChart('bar', data, '#myChart', opts);
 	});
-  </script>
+	</script>
 
 </body>
 </html>
